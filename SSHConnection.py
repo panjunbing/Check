@@ -11,7 +11,7 @@ class SSHConnection(object):
         self.transport = None
         self.sftp = None
         self.client = None
-        self.connect()
+        # self.connect()
 
     def connect(self):
         transport = paramiko.Transport(self.ip, self.port)
