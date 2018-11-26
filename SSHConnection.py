@@ -1,21 +1,19 @@
 # coding=utf-8
 import paramiko
 
+from Host import Host
 
 class SSHConnection(object):
-    def __init__(self, ip, port, username, password):
-        self.ip = ip
-        self.port = port
-        self.username = username
-        self.password = password
+    def __init__(self, host):
+        self.host = host
         self.transport = None
         self.sftp = None
         self.client = None
         # self.connect()
 
     def connect(self):
-        transport = paramiko.Transport(self.ip, self.port)
-        transport.connect(username=self.username, password=self.password)
+        transport = paramiko.Transport(self.host.ip, self.host.port)
+        transport.connect(username=self.host.username, password=self.host.password)
         self.transport = transport
 
     # 下载
