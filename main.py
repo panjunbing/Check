@@ -15,6 +15,7 @@ if __name__ == "__main__":
     return_list = []
     # 筛选数据列表
     data_list = []
+
     # 批量读取主机列表
     workbook = xlrd.open_workbook("host.xls")
     sheet = workbook.sheet_by_index(0)
@@ -27,6 +28,7 @@ if __name__ == "__main__":
         else:
             password = str(int(sheet.cell(i + 1, 3).value))
         cmd_file = sheet.cell(i + 1, 4).value.encode('utf-8')
+
         # 读取主机对应CMD文件中的数据
         # 命令列表
         cmd = []
@@ -34,15 +36,15 @@ if __name__ == "__main__":
         cmd_re = []
         # 返回值名称列表
         text = []
-        workbook_cmd = xlrd.open_workbook("/CMD/" + cmd_file)
-        sheet_cmd = workbook.sheet_by_index(0)
-        for j in range(len(sheet.nrows -1)):
-            cmd.append(sheet.cell(j + 1, 1).value)
-            if sheet.cell(i + 1, 5).value.encode('utf-8') is not '':
-                cmd_re.append(sheet.cell(i + 1, 5).value.encode('utf-8'))
+        workbook_cmd = xlrd.open_workbook("CMD/" + cmd_file)
+        sheet_cmd = workbook_cmd.sheet_by_index(0)
+        for j in range(sheet_cmd.nrows - 1):
+            cmd.append(sheet_cmd.cell(j + 1, 0).value)
+            if sheet_cmd.cell(j + 1, 1).value.encode('utf-8') is not '':
+                cmd_re.append(sheet_cmd.cell(j + 1, 1).value.encode('utf-8'))
             else:
                 cmd_re.append(None)
-            text.append(sheet.cell(j + 1, 3).value)
+            text.append(sheet_cmd.cell(j + 1, 2).value)
         # 初始化单台主机并加入主机列表中
         host = Host(ip, port, username, password, cmd, cmd_re)
         host_list.append(host)
