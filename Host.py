@@ -6,6 +6,3 @@ class Host(object):
         self.password = password
         self.cmd = cmd
         self.cmd_re = cmd_re
-
-    def get_re(self):
-        return self.cmd_re

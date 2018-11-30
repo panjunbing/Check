@@ -11,13 +11,10 @@ if __name__ == "__main__":
 
     # 主机列表
     host_list = []
-
     # 返回数据列表
     return_list = []
-
     # 筛选数据列表
     data_list = []
-
     # 批量读取主机列表
     workbook = xlrd.open_workbook("host.xls")
     sheet = workbook.sheet_by_index(0)
@@ -30,18 +27,23 @@ if __name__ == "__main__":
         else:
             password = str(int(sheet.cell(i + 1, 3).value))
         cmd_file = sheet.cell(i + 1, 4).value.encode('utf-8')
-        # 命令
+        # 读取主机对应CMD文件中的数据
+        # 命令列表
         cmd = []
-        # 返回值名称
+        # 命令对应正则表达式列表
+        cmd_re = []
+        # 返回值名称列表
         text = []
-
         workbook_cmd = xlrd.open_workbook("/CMD/" + cmd_file)
         sheet_cmd = workbook.sheet_by_index(0)
-
-        if sheet.cell(i + 1, 5).value.encode('utf-8') is not '':
-            cmd_re = sheet.cell(i + 1, 5).value.encode('utf-8')
-        else:
-            cmd_re = None
+        for j in range(len(sheet.nrows -1)):
+            cmd.append(sheet.cell(j + 1, 1).value)
+            if sheet.cell(i + 1, 5).value.encode('utf-8') is not '':
+                cmd_re.append(sheet.cell(i + 1, 5).value.encode('utf-8'))
+            else:
+                cmd_re.append(None)
+            text.append(sheet.cell(j + 1, 3).value)
+        # 初始化单台主机并加入主机列表中
         host = Host(ip, port, username, password, cmd, cmd_re)
         host_list.append(host)
 
@@ -49,13 +51,13 @@ if __name__ == "__main__":
     for i in range(len(host_list)):
         conn = SSHConnection(host_list[i])
         conn.connect()
-        return_list.append(conn.exec_command(host_list[i].cmd))
+        # 批量执行命令并将返回值通过正则表达式取出想要的返回值
+        for j in range(len(host_list[i].cmd)):
+            return_value = conn.exec_command(host_list[i].cmd[j])
+            data_list.append(re.search(host_list[i].cmd_re,return_value).group(0))
         conn.close()
 
-    # 用正则表达式筛选出数据
-    for i in range(len(return_list)):
-        if host_list[i].cmd_re is not None:
-            data_list.append(re.search(host_list[i].cmd_re, return_list[i], ).group(0))
+    # 输出返回值
     print data_list
 
     # 写入excel
