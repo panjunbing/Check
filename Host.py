@@ -1,8 +1,11 @@
 class Host(object):
-    def __init__(self, ip, port, username, password, cmd, re):
+    def __init__(self, ip, port, username, password, cmd, cmd_re):
         self.ip = ip
         self.port = port
         self.username = username
         self.password = password
         self.cmd = cmd
-        self.re = re
+        self.cmd_re = cmd_re
+
+    def get_re(self):
+        return self.cmd_re
