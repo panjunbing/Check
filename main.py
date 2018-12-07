@@ -4,6 +4,7 @@ import xlrd
 import xlwt
 import re
 
+from Data import Data
 from Host import Host
 from SSHConnection import SSHConnection
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
                 cmd_re.append(None)
             text.append(sheet_cmd.cell(j + 1, 2).value)
         # 初始化单台主机并加入主机列表中
-        host = Host(ip, port, username, password, cmd, cmd_re)
+        host = Host(ip, port, username, password, cmd, cmd_re, text)
         host_list.append(host)
 
     # 循环登录host并执行对应代码
@@ -56,7 +57,8 @@ if __name__ == "__main__":
         # 批量执行命令并将返回值通过正则表达式取出想要的返回值
         for j in range(len(host_list[i].cmd)):
             return_value = conn.exec_command(host_list[i].cmd[j])
-            data_list.append(re.search(host_list[i].cmd_re,return_value).group(0))
+            data = Data(host_list[i].ip, host_list[i].cmd[j], host_list[i].text[j], re.search(host_list[i].cmd_re[j], return_value).group(0))
+            data_list.append(data)
         conn.close()
 
     # 输出返回值
@@ -68,11 +70,14 @@ if __name__ == "__main__":
     style = xlwt.easyxf("font:name Times New Roman,color-index black,bold on", num_format_str="#,##0.00")
     sheet.write(0, 0, 'IP')
     sheet.write(0, 1, 'CMD')
-    sheet.write(0, 2, 'OUT')
+    sheet.write(0, 2, 'TEXT')
+    sheet.write(0, 3, 'OUT')
     for i in range(len(data_list)):
-        sheet.write(i + 1, 0, host_list[i].ip)
-        sheet.write(i + 1, 1, host_list[i].cmd)
-        sheet.write(i + 1, 2, data_list[i])
+        sheet.write(i + 1, 0, data_list[i].ip)
+        sheet.write(i + 1, 1, data_list[i].cmd)
+        sheet.write(i + 1, 2, data_list[i].text)
+        sheet.write(i + 1, 3, data_list[i].data)
     workbook.save("out.xls")
 
+    print "脚本执行完毕"
     time.sleep(60)
