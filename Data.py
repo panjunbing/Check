@@ -1,6 +1,7 @@
 class Data(object):
-    def __init__(self, ip, cmd, text, data):
+    def __init__(self, ip, desc, data):
         self.ip = ip
-        self.cmd = cmd
-        self.text = text
+        # 执行命令的描述
+        self.desc = desc
+        # 执行命令返回的结果
         self.data = data

@@ -1,7 +1,5 @@
-# coding=utf-8
 import paramiko
 
-from Host import Host
 
 class SSHConnection(object):
     def __init__(self, host):
